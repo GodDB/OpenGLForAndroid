@@ -2,12 +2,13 @@ package com.example.openglforandroid.glUtil
 
 import android.opengl.GLES20
 import android.util.Log
+import com.example.openglforandroid.base.GLESBufferBinder
 import java.nio.FloatBuffer
 
 class ShaderProgram(
     val vertexShader: Shader,
     val fragmentShader: Shader
-) {
+) : GLESBufferBinder {
     val programId: Int
 
     init {
@@ -50,14 +51,6 @@ class ShaderProgram(
         return checkNotNull(result)
     }
 
-    fun updateAttribute4f(key: String, x: Float, y: Float, z: Float, w: Float) {
-
-    }
-
-    fun updateAttribute3f(key: String, x: Float, y: Float, z: Float) {
-
-    }
-
     fun getUniformPointer(key: String): Int {
         var result = pointerMap[key]
         if (result == null) {
@@ -86,11 +79,11 @@ class ShaderProgram(
         runGL { GLES20.glUniform3f(pointer, x, y, z) }
     }
 
-    fun activate() {
+    override fun bind() {
         runGL { GLES20.glUseProgram(programId) }
     }
 
-    fun deactivate() {
+    override fun unbind() {
         runGL { GLES20.glUseProgram(0) }
     }
 }

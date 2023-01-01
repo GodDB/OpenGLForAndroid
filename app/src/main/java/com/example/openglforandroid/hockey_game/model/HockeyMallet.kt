@@ -1,5 +1,6 @@
 package com.example.openglforandroid.hockey_game.model
 
+import android.content.Context
 import android.opengl.GLES20
 import com.example.openglforandroid.base.ElementDrawer
 import com.example.openglforandroid.glUtil.FLOAT_BYTE_SIZE
@@ -8,7 +9,7 @@ import com.example.openglforandroid.glUtil.floatBufferOf
 import com.example.openglforandroid.glUtil.intBufferOf
 import com.example.openglforandroid.glUtil.runGL
 
-class HockeyMallet : ElementDrawer {
+class HockeyMallet(private val context: Context) : ElementDrawer {
 
     private val vertices = floatBufferOf(
         0f , -0.25f, 0f,

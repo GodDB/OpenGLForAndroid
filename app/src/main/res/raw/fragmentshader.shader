@@ -1,11 +1,11 @@
 precision mediump float;
 
-//uniform vec4 u_Color;
+uniform sampler2D u_TextureUnit;
 
 // gl 3.x에서 in과 같은 역할
-varying vec4 f_Color;
+varying vec2 f_Texture_Position;
 
 void main()
 {
-    gl_FragColor = f_Color;
+    gl_FragColor = texture2D(u_TextureUnit, f_Texture_Position);
 }

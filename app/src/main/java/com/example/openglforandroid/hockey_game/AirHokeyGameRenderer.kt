@@ -19,7 +19,7 @@ import com.example.openglforandroid.hockey_game.model.HockeyTable
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class AirHokeyGameRenderer(context: Context) : GLSurfaceView.Renderer {
+class AirHokeyGameRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     private val program by lazy {
         runGL {
@@ -34,8 +34,8 @@ class AirHokeyGameRenderer(context: Context) : GLSurfaceView.Renderer {
 
     /** 이곳에 모델 추가 하시오. */
     private val models = listOf<ElementDrawer>(
-        HockeyTable(),
-        HockeyMallet()
+        HockeyTable(context),
+        HockeyMallet(context)
     )
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -45,7 +45,7 @@ class AirHokeyGameRenderer(context: Context) : GLSurfaceView.Renderer {
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         Log.e("godgod", "onSurfaceChanged")
         runGL { GLES20.glViewport(0, 0, width, height) }
-        program.activate()
+        program.bind()
         val cameraTransform = createIdentity4Matrix()
         val matrix = createIdentity4Matrix()
         Matrix.perspectiveM(
@@ -53,7 +53,7 @@ class AirHokeyGameRenderer(context: Context) : GLSurfaceView.Renderer {
             0, // offset
             45.0f, // fovy
             width.toFloat() / height.toFloat(),
-            1f, // near
+            2f, // near
             10f // far
         )
         program.updateUniformMatrix4f("u_Perspective", matrix.toBuffer())
@@ -62,15 +62,17 @@ class AirHokeyGameRenderer(context: Context) : GLSurfaceView.Renderer {
         models.forEach {
             it.onSurfaceChanged(width, height, program)
         }
+        program.unbind()
     }
 
     override fun onDrawFrame(gl: GL10?) {
         // Log.e("godgod", "onDrawFrame")
+        program.bind()
         runGL { GLES20.glClearColor(0f, 0f, 0f, 0f) }
         runGL { GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT) }
-        program.activate()
         models.forEach {
             it.draw(program)
         }
+        program.unbind()
     }
 }
