@@ -7,8 +7,8 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-private const val INT_BYTE_SIZE = 4
-private const val FLOAT_BYTE_SIZE = 4
+const val INT_BYTE_SIZE = 4
+const val FLOAT_BYTE_SIZE = 4
 
 fun floatBufferOf(vararg value: Float): FloatBuffer {
     return ByteBuffer
@@ -32,7 +32,7 @@ fun intBufferOf(vararg value: Int): IntBuffer {
         }
 }
 
-inline fun <T> runGL(block: () -> T) : T {
+inline fun <T> runGL(block: () -> T): T {
     val result = block()
     val error = GLES20.glGetError()
     if (error != GLES20.GL_NO_ERROR) {
