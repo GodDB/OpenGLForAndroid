@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.opengl.GLSurfaceView
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.openglforandroid.hockey_game.AirHokeyGameRenderer
@@ -31,7 +32,12 @@ class MainActivity : AppCompatActivity() {
         val surfaceView = getGLSurfaceView()
         if (isSupportedOpenGL()) {
             surfaceView.setEGLContextClientVersion(2)
-            surfaceView.setRenderer(AirHokeyGameRenderer(this))
+            val renderer = AirHokeyGameRenderer(this)
+            surfaceView.setRenderer(renderer)
+            surfaceView.setOnTouchListener { v, event ->
+                Log.e("godgod", "onTouch")
+                renderer.onTouchEvent(event)
+            }
         } else {
             Toast.makeText(this, "OpenGL 2.0 버전이 지원되지 않는 기기입니다.", Toast.LENGTH_LONG).show()
         }
@@ -44,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         return configurationInfo.reqGlEsVersion >= 0x20000
     }
 
-    private fun getGLSurfaceView() : GLSurfaceView {
+    private fun getGLSurfaceView(): GLSurfaceView {
         return findViewById(R.id.surface_view)
     }
 }
