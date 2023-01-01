@@ -36,5 +36,6 @@ class HockeyTable : ElementDrawer {
         runGL { GLES20.glDrawElements(GLES20.GL_TRIANGLES, tableVertexIndices.capacity(), GLES20.GL_UNSIGNED_INT, tableVertexIndices) }
         runGL { GLES20.glUniform4f(colorPointer, 1.0f, 0.0f, 0.0f, 1.0f) }
         runGL { GLES20.glDrawElements(GLES20.GL_LINES, tableLineVertexIndices.capacity(), GLES20.GL_UNSIGNED_INT, tableLineVertexIndices) }
+        runGL { GLES20.glEnableVertexAttribArray(0) } // vertexArray를 비활성화 한다.
     }
 }

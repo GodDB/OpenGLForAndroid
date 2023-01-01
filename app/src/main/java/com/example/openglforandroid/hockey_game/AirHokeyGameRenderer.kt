@@ -11,6 +11,7 @@ import com.example.openglforandroid.glUtil.ShaderProgram
 import com.example.openglforandroid.glUtil.Shader
 import com.example.openglforandroid.glUtil.floatBufferOf
 import com.example.openglforandroid.glUtil.runGL
+import com.example.openglforandroid.hockey_game.model.HockeyMallet
 import com.example.openglforandroid.hockey_game.model.HockeyTable
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -30,16 +31,8 @@ class AirHokeyGameRenderer(context: Context) : GLSurfaceView.Renderer {
 
     /** 이곳에 모델 추가 하시오. */
     private val models = listOf<ElementDrawer>(
-        HockeyTable()
-    )
-
-
-    val mallet1 = floatBufferOf(
-        4.5f, 2f
-    )
-
-    val mallet2 = floatBufferOf(
-        4.5f, 12f
+        HockeyTable(),
+        HockeyMallet()
     )
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
