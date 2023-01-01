@@ -106,8 +106,10 @@ class Camera() {
             MotionEvent.ACTION_MOVE -> {
                 val deltaX = event.rawX - pressedX
                 val deltaY = event.rawY - pressedY
-                pos.x -= ((deltaX / width)/30)
-                pos.y += ((deltaY / height)/30)
+                pos.x -= (deltaX / width)
+                pos.y += (deltaY / height)
+                pressedX = event.rawX
+                pressedY = event.rawY
                 Log.e("godgod", "$deltaX  ${deltaY}  ${pos.x}  ${pos.y}")
             }
             MotionEvent.ACTION_UP -> {
