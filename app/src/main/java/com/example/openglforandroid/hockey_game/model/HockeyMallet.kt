@@ -19,6 +19,10 @@ class HockeyMallet : ElementDrawer {
         0, 1
     )
 
+    override fun onSurfaceChanged(width: Int, height: Int, program: ShaderProgram) {
+
+    }
+
     override fun draw(program: ShaderProgram) {
         val vertexPointer = runGL { program.getAttributePointer("v_Position") }
         runGL { GLES20.glVertexAttribPointer(vertexPointer, 3, GLES20.GL_FLOAT, false, 3 * FLOAT_BYTE_SIZE, vertices) } // vertex정보들을 vertexArray에게 전달한다.

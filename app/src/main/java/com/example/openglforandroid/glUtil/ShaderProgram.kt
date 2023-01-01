@@ -2,18 +2,19 @@ package com.example.openglforandroid.glUtil
 
 import android.opengl.GLES20
 import android.util.Log
+import java.nio.FloatBuffer
 
 class ShaderProgram(
-    val vertexShader : Shader,
-    val fragmentShader : Shader
+    val vertexShader: Shader,
+    val fragmentShader: Shader
 ) {
-    val programId : Int
+    val programId: Int
 
     init {
         programId = createProgram(vertexShader, fragmentShader)
     }
 
-    val pointerMap : HashMap<String, Int> = hashMapOf()
+    val pointerMap: HashMap<String, Int> = hashMapOf()
 
     private fun createProgram(vertexShader: Shader, fragmentShader: Shader): Int {
         var program = runGL { GLES20.glCreateProgram() }
@@ -36,30 +37,53 @@ class ShaderProgram(
         return program
     }
 
-    fun getAttributePointer(key : String) : Int {
+    fun getAttributePointer(key: String): Int {
         var result = pointerMap[key]
-        if(result == null) {
+        if (result == null) {
             val pointer = GLES20.glGetAttribLocation(programId, key)
             pointerMap[key] = pointer
             result = pointerMap[key]
         }
-        if(result == -1 ) {
+        if (result == -1) {
             throw java.lang.RuntimeException("not valid key")
         }
         return checkNotNull(result)
     }
 
-    fun getUniformPointer(key : String) : Int {
+    fun updateAttribute4f(key: String, x: Float, y: Float, z: Float, w: Float) {
+
+    }
+
+    fun updateAttribute3f(key: String, x: Float, y: Float, z: Float) {
+
+    }
+
+    fun getUniformPointer(key: String): Int {
         var result = pointerMap[key]
-        if(result == null) {
-            val pointer = GLES20.glGetUniformLocation(programId, key)
+        if (result == null) {
+            val pointer = runGL { GLES20.glGetUniformLocation(programId, key) }
             pointerMap[key] = pointer
             result = pointerMap[key]
         }
-        if(result == -1 ) {
+        if (result == -1) {
             throw java.lang.RuntimeException("not valid key")
         }
         return checkNotNull(result)
+    }
+
+    fun updateUniformMatrix4f(key: String, buffer: FloatBuffer) {
+        val pointer = getUniformPointer(key)
+        runGL { GLES20.glUniformMatrix4fv(pointer, 1, false, buffer) }
+    }
+
+    fun updateUniform4f(key: String, x: Float, y: Float, z: Float, w: Float) {
+        val pointer = getUniformPointer(key)
+        runGL { GLES20.glUniform4f(pointer, x, y, z, w) }
+    }
+
+    fun updateUniform3f(key: String, x: Float, y: Float, z: Float) {
+        val pointer = getUniformPointer(key)
+        runGL { GLES20.glUniform3f(pointer, x, y, z) }
     }
 
     fun activate() {
@@ -67,6 +91,6 @@ class ShaderProgram(
     }
 
     fun deactivate() {
-       runGL { GLES20.glUseProgram(0) }
+        runGL { GLES20.glUseProgram(0) }
     }
 }

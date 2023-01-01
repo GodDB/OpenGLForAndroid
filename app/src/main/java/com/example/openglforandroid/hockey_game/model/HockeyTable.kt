@@ -1,12 +1,15 @@
 package com.example.openglforandroid.hockey_game.model
 
 import android.opengl.GLES20
+import android.opengl.Matrix
 import com.example.openglforandroid.base.ElementDrawer
 import com.example.openglforandroid.glUtil.FLOAT_BYTE_SIZE
 import com.example.openglforandroid.glUtil.ShaderProgram
+import com.example.openglforandroid.glUtil.createIdentity4Matrix
 import com.example.openglforandroid.glUtil.floatBufferOf
 import com.example.openglforandroid.glUtil.intBufferOf
 import com.example.openglforandroid.glUtil.runGL
+import com.example.openglforandroid.glUtil.toBuffer
 
 class HockeyTable : ElementDrawer {
 
@@ -29,9 +32,19 @@ class HockeyTable : ElementDrawer {
         4, 5
     )
 
+    override fun onSurfaceChanged(width: Int, height: Int, program: ShaderProgram) {
+
+    }
+
     override fun draw(program: ShaderProgram) {
         val vertexPointer = runGL { program.getAttributePointer("v_Position") }
         val colorPointer = runGL { program.getAttributePointer("v_Color") }
+
+        val modelTransform = createIdentity4Matrix()
+        Matrix.translateM(modelTransform, 0, 0f, 0f, -3f)
+        Matrix.rotateM(modelTransform, 0, -60f, 1f, 0f, 0f)
+        program.updateUniformMatrix4f("u_Model", modelTransform.toBuffer())
+
         setupVertices(vertexPointer)
         setupColor(colorPointer)
         runGL { GLES20.glDrawElements(GLES20.GL_TRIANGLES, tableVertexIndices.capacity(), GLES20.GL_UNSIGNED_INT, tableVertexIndices) }
