@@ -33,7 +33,7 @@ fun intBufferOf(vararg value: Int): IntBuffer {
         }
 }
 
-fun FloatArray.toBuffer() : FloatBuffer {
+fun FloatArray.toBuffer(): FloatBuffer {
     return ByteBuffer
         .allocateDirect(this.size * FLOAT_BYTE_SIZE) // native 메모리 할당 사이즈
         .order(ByteOrder.nativeOrder()) // 왼쪽부터 채울것인지? 오른쪽부터 채울것인지? 시스템이 알아서 함
@@ -44,7 +44,33 @@ fun FloatArray.toBuffer() : FloatBuffer {
         }
 }
 
-fun createIdentity4Matrix() : FloatArray {
+fun List<Int>.toBuffer(): IntBuffer {
+    return ByteBuffer
+        .allocateDirect(this.size * FLOAT_BYTE_SIZE) // native 메모리 할당 사이즈
+        .order(ByteOrder.nativeOrder()) // 왼쪽부터 채울것인지? 오른쪽부터 채울것인지? 시스템이 알아서 함
+        .asIntBuffer()
+        .apply {
+            this@toBuffer.forEach {
+                put(it) // 데이터 전달
+            }
+            position(0)
+        }
+}
+
+fun List<Float>.toBuffer(): FloatBuffer {
+    return ByteBuffer
+        .allocateDirect(this.size * FLOAT_BYTE_SIZE) // native 메모리 할당 사이즈
+        .order(ByteOrder.nativeOrder()) // 왼쪽부터 채울것인지? 오른쪽부터 채울것인지? 시스템이 알아서 함
+        .asFloatBuffer()
+        .apply {
+            this@toBuffer.forEach {
+                put(it) // 데이터 전달
+            }
+            position(0)
+        }
+}
+
+fun createIdentity4Matrix(): FloatArray {
     return FloatArray(16).apply {
         Matrix.setIdentityM(this, 0)
     }

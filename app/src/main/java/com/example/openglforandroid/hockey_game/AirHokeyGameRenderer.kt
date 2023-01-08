@@ -22,7 +22,7 @@ import javax.microedition.khronos.opengles.GL10
 
 class AirHokeyGameRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
-    private val program by lazy {
+    private val tableProgram by lazy {
         runGL {
             val vertexShaderSourceCode = FileReader.readFile(context, R.raw.vertexshader)
             val fragmentShaderSourceCode = FileReader.readFile(context, R.raw.fragmentshader)
@@ -33,11 +33,24 @@ class AirHokeyGameRenderer(private val context: Context) : GLSurfaceView.Rendere
         }
     }
 
+    private val malletProgram by lazy {
+        runGL {
+            val vertexShaderSourceCode = FileReader.readFile(context, R.raw.mallet_vertexshader)
+            val fragmentShaderSourceCode = FileReader.readFile(context, R.raw.mallet_fragmentshader)
+            ShaderProgram(
+                vertexShader = Shader(vertexShaderSourceCode, Shader.Type.VERTEX),
+                fragmentShader = Shader(fragmentShaderSourceCode, Shader.Type.FRAGMENT)
+            )
+        }
+    }
+
     /** 이곳에 모델 추가 하시오. */
-    private val models = listOf<ElementDrawer>(
-        HockeyTable(context),
-        HockeyMallet(context)
-    )
+    private val models by lazy {
+        listOf<Pair<ElementDrawer, ShaderProgram>>(
+            HockeyTable(context) to tableProgram,
+            HockeyMallet(context) to malletProgram
+        )
+    }
 
     private val camera = Camera()
 
@@ -47,13 +60,12 @@ class AirHokeyGameRenderer(private val context: Context) : GLSurfaceView.Rendere
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         Log.e("godgod", "onSurfaceChanged")
+        runGL { GLES20.glViewport(0, 0, width, height) }
+        runGL { GLES20.glEnable(GL10.GL_CULL_FACE) } // 벡터 외적이 후면을 바라보는 부분 제거
+        runGL { GLES20.glEnable(GL10.GL_DEPTH_TEST) } // z버퍼 생성
         camera.setScreenWidth(width.toFloat())
         camera.setScreenHeight(height.toFloat())
-
-        runGL { GLES20.glViewport(0, 0, width, height) }
-        program.bind()
         val perspectiveMatrix = createIdentity4Matrix()
-
         Matrix.perspectiveM(
             perspectiveMatrix, // matrix
             0, // offset
@@ -62,24 +74,26 @@ class AirHokeyGameRenderer(private val context: Context) : GLSurfaceView.Rendere
             2f, // near
             10f // far
         )
-        program.updateUniformMatrix4f("u_Perspective", perspectiveMatrix.toBuffer())
-
         models.forEach {
-            it.onSurfaceChanged(width, height, program)
+            val (drawer: ElementDrawer, program: ShaderProgram) = it
+            program.bind()
+            program.updateUniformMatrix4f("u_Perspective", perspectiveMatrix.toBuffer())
+            drawer.onSurfaceChanged(width, height, program)
+            program.unbind()
         }
-        program.unbind()
     }
 
     override fun onDrawFrame(gl: GL10?) {
         // Log.e("godgod", "onDrawFrame")
-        program.bind()
         runGL { GLES20.glClearColor(0f, 0f, 0f, 0f) }
         runGL { GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT) }
         models.forEach {
-            it.draw(program)
+            val (drawer: ElementDrawer, program: ShaderProgram) = it
+            program.bind()
+            program.updateUniformMatrix4f("u_Camera", camera.getMatrix())
+            drawer.draw(program)
+            program.unbind()
         }
-        program.updateUniformMatrix4f("u_Camera", camera.getMatrix())
-        program.unbind()
     }
 
     fun onTouchEvent(event: MotionEvent): Boolean {
